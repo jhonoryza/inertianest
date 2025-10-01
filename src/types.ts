@@ -1,4 +1,11 @@
 import { IncomingHttpHeaders, OutgoingHttpHeaders } from 'http'
+import '@fastify/view'
+
+declare module 'fastify' {
+  interface FastifyReply {
+    view(template: string, data: object): Promise<string>
+  }
+}
 
 export interface InertiaResponse {
   component: string
