@@ -1,7 +1,7 @@
 {
   "name": "inertianest",
-  "version": "0.1.0",
-  "description": "A single package for Inertia.js adapters for Express and Fastify",
+  "version": "1.0.0",
+  "description": "A package for Inertia.js adapters for Nestjs with (Express and Fastify)",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
@@ -14,7 +14,7 @@
     "fastify",
     "nest"
   ],
-  "author": "Fajar",
+  "author": "fajar sp <labkita.my.id@gmail.com> (https://blog.labkita.my.id)",
   "license": "MIT",
   "engines": {
     "node": ">=20"
