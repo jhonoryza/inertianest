@@ -17,7 +17,7 @@
   "author": "Fajar",
   "license": "MIT",
   "engines": {
-    "node": ">=22"
+    "node": ">=20"
   },
   "devDependencies": {
     "@fastify/view": "^11.1.1",
