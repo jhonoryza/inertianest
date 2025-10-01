@@ -1,0 +1,36 @@
+{
+  "name": "inertianest",
+  "version": "0.1.0",
+  "description": "A single package for Inertia.js adapters for Express and Fastify",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc"
+  },
+  "keywords": [
+    "inertia",
+    "node",
+    "express",
+    "fastify",
+    "nest"
+  ],
+  "author": "Fajar",
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^4.5.0",
+    "@types/node": "^16.0.0",
+    "@types/express": "^4.17.13"
+  },
+  "peerDependencies": {
+    "express": "^4.0.0",
+    "fastify": "^3.0.0"
+  },
+  "peerDependenciesMeta": {
+    "express": {
+      "optional": true
+    },
+    "fastify": {
+      "optional": true
+    }
+  }
+}
