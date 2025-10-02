@@ -147,14 +147,18 @@ async function bootstrap() {
 import { Controller, Get } from '@nestjs/common';
 import { Render } from 'inertianest';
 
-@Controller()
-export class AppController {
-  @Get()
-  @Render('Home')  // Name of your Inertia component
-  index() {
+@Controller('users')
+export class UsersController {
+  @Post('create')
+  @Render('Users/Create')
+  async create() {
+    const user = await this.userService.create();
+    
     return {
-      title: 'Welcome',
-      description: 'This is an Inertia-powered page'
+      statusCode: 201,
+      flash: { message: 'User created successfully' },
+      viewData: { title: 'Create User' },
+      props: { user }
     };
   }
 }
@@ -246,7 +250,7 @@ export class AppController {
 
 ```json
 "build": "nest build && cd client && vite build",
-"dev": "NODE_ENV=development concurrently \"npm:start:debug\" \"npm:start:client\" -c \"blue,green\" -k",
+"dev": "NODE_ENV=development concurrently \"npm:start:dev\" \"npm:start:client\" -c \"blue,green\" -k",
 "start:client": "cd client && vite",
 ```
 
@@ -508,6 +512,52 @@ add to `client/main.js`
 
 ```js
 import './style.css';
+```
+
+## Without Decorator 
+
+The better approach is to use the @Render() decorator and let NestJS handle the response lifecycle, which ensures all these features work as expected:
+
+example express
+
+```ts
+import express from 'express';
+import { inertia } from 'inertianest/express';
+
+const app = express();
+
+// Setup inertia middleware
+app.use(inertia({
+  view: 'app',
+  version: '1.0',
+  manifest: {}
+}));
+
+// Setelah middleware terpasang, res.inertia tersedia di semua route
+app.get('/', (req, res) => {
+  res.inertia.render('Home', { message: 'Hello' });
+});
+```
+
+example fastify
+
+```ts
+import fastify from 'fastify'
+import { inertia } from 'inertianest/fastify'
+
+const app = fastify()
+
+// Register inertia middleware
+app.addHook('onRequest', inertia({
+  view: 'app',
+  version: '1.0',
+  manifest: {}
+}))
+
+// Sekarang reply.inertia tersedia di semua route
+app.get('/', async (request, reply) => {
+  return reply.inertia.render('Home', { message: 'Hello' })
+})
 ```
 
 ---

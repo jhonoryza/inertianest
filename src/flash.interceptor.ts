@@ -17,10 +17,18 @@ export class FlashInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     const ctx = context.switchToHttp()
     const req = ctx.getRequest()
-    const flash = this.reflector.get('flash', context.getHandler())
+    const flashFn = this.reflector.get('flash', context.getHandler());
 
-    if (!flash) return next.handle()
+    if (!flashFn) return next.handle();
 
-    return next.handle().pipe(map((props) => req.flash('flash', flash)))
+    return next.handle().pipe(
+      map((data) => {
+        const flashMessage = typeof flashFn === 'function' 
+          ? flashFn(data)
+          : flashFn;
+        
+        return req.flash('flash', flashMessage);
+      })
+    );
   }
 }

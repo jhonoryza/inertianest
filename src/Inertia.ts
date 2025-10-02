@@ -15,6 +15,8 @@ interface InertiaConfig {
 export abstract class Inertia {
   protected statusCode: number = 200
   protected sharedData: Record<string, unknown> = {}
+  protected viewData: Record<string, any> = {}
+  protected customHeaders: Record<string, string> = {}
 
   protected static config: InertiaConfig = {
     view: 'app',
@@ -52,6 +54,46 @@ export abstract class Inertia {
 
   flushShared() {
     this.sharedData = {}
+    return this
+  }
+
+  setStatusCode(code: number) {
+    this.statusCode = code
+    return this
+  }
+
+  withViewData(key: string, value: any) {
+    if (!this.viewData) {
+      this.viewData = {}
+    }
+    this.viewData[key] = value
+    return this
+  }
+
+  withError(errors: Record<string, string[]>) {
+    return this.with('errors', errors)
+  }
+
+  withFlash(message: string | Record<string, any>) {
+    if (typeof message === 'string') {
+      return this.with('flash', { message })
+    }
+    return this.with('flash', message)
+  }
+
+  with(key: string, value: any) {
+    if (!this.sharedData) {
+      this.sharedData = {}
+    }
+    this.sharedData[key] = value
+    return this
+  }
+
+  withHeaders(headers: Record<string, string>) {
+    if (!this.customHeaders) {
+      this.customHeaders = {}
+    }
+    this.customHeaders = { ...this.customHeaders, ...headers }
     return this
   }
 
@@ -119,7 +161,8 @@ export abstract class Inertia {
 
     return {
       statusCode: this.statusCode,
-      headers: isInertia
+      headers: {
+      ...isInertia
         ? {
             [HEADERS.CONTENT_TYPE]: 'application/json',
             [HEADERS.VARY]: 'accept',
@@ -128,8 +171,11 @@ export abstract class Inertia {
         : {
             [HEADERS.CONTENT_TYPE]: 'text/html; charset=utf-8',
           },
+      ...this.customHeaders,
+    },
       data,
       isInertia,
+      viewData: this.viewData,
     }
   }
 }

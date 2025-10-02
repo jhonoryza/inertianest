@@ -19,7 +19,13 @@ export class InertiaFastify extends Inertia {
     this.reply.status(statusCode)
     this.reply.headers(headers)
 
+    const viewContext = {
+      manifest,
+      inertiaData: data,
+      ...this.viewData 
+    }
+
     if (isInertia) return data
-    else return this.reply.view(view, { manifest, inertiaData: data })
+    else return this.reply.view(view, viewContext)
   }
 }

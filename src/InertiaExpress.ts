@@ -20,11 +20,17 @@ export class InertiaExpress extends Inertia {
     this.res.status(statusCode)
     this.res.set(headers)
 
+    const viewContext = {
+      manifest,
+      inertiaData: data,
+      ...this.viewData 
+    }
+
     if (options?.return) {
       if (isInertia) return data
 
       return new Promise((resolve, reject) => {
-        this.res.render(view, { manifest, inertiaData: data }, (err, html) => {
+        this.res.render(view, viewContext, (err, html) => {
           if (err) reject(err)
           else resolve(html)
         })
@@ -32,6 +38,6 @@ export class InertiaExpress extends Inertia {
     }
 
     if (isInertia) this.res.end(data)
-    else this.res.render(view, { manifest, inertiaData: data })
+    else this.res.render(view, viewContext)
   }
 }

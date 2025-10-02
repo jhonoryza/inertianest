@@ -12,6 +12,7 @@ export interface InertiaResponse {
   props: Record<string, unknown>
   url: string
   version: number | string
+  viewData?: Record<string, any>
 }
 
 export interface RequestData {
@@ -26,6 +27,7 @@ export interface ResponseData {
   headers: OutgoingHttpHeaders
   data: string | null
   isInertia: boolean
+  viewData?: Record<string, any>
 }
 
 export interface LazyFunction extends Function {
