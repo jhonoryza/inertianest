@@ -179,7 +179,9 @@ For Express (views/app.ejs):
     <% } else { %>
         <!-- Assets for production taken from generated manifest file -->
         <% if (viteEntry.css) { %>
-            <link rel="stylesheet" href="/<%= viteEntry.css[0] %>">
+            <% viteEntry.css.forEach(function (cssFile) { %>
+                <link rel="stylesheet" href="/<%= cssFile %>">
+            <% }); %>
         <% } %>
         <script type="module" src="/<%= viteEntry.file %>"></script>
     <% } %>
@@ -248,9 +250,7 @@ export class AppController {
 "start:client": "cd client && vite",
 ```
 
-## Depedencies
-
-if use vue
+## Vue Depedencies
 
 ```json
     "@inertiajs/inertia",
@@ -472,6 +472,42 @@ const content = computed(() => page.props.content);
     <p>{{ content }}</p>
   </Main>
 </template>
+```
+
+### Add TailwindCSS
+
+install
+
+```bash
+npm install tailwindcss @tailwindcss/vite
+```
+
+modify `vite.config.js`
+
+```js
+import { defineConfig } from 'vite'
+import tailwindcss from '@tailwindcss/vite'
+
+export default () => ({
+  ...
+  
+  plugins: [
+    tailwindcss(),
+  ],
+
+})
+```
+
+create `client/style.css`
+
+```css
+@import "tailwindcss";
+```
+
+add to `client/main.js`
+
+```js
+import './style.css';
 ```
 
 ---
