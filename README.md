@@ -560,6 +560,171 @@ app.get('/', async (request, reply) => {
 })
 ```
 
+## Lazy and Defer
+
+Lazy Props:
+
+- Only load when explicitly requested via partial reloads
+- Will be excluded from initial page load
+- Good for data that isn't immediately needed
+- Must be manually triggered to load via Inertia.reload()
+
+Deferred Props:
+
+- Automatically load after initial page render
+- Initially returns null on first render
+- Then automatically fetches data without manual intervention
+- Good for non-critical data that can load after page is visible
+
+```ts
+@Controller('dashboard')
+export class DashboardController {
+  @Get()
+  @Render('Dashboard/Index')
+  async index() {
+    return {
+      props: {
+        // Critical data - loads immediately
+        user: await this.getUser(),
+        
+        // Deferred - loads automatically after page render
+        recentActivity: Inertia.deferred(async () => {
+          return await this.getRecentActivity();
+        }),
+        
+        // Lazy - only loads when manually requested
+        analytics: Inertia.lazy(async () => {
+          return await this.getAnalytics();
+        })
+      }
+    };
+  }
+}
+```
+
+And then in your Vue component, you can request partial reloads like this:
+
+```vue
+<script setup>
+import { onMounted } from 'vue'
+import { Inertia } from '@inertiajs/inertia'
+
+// Deferred props load automatically - no manual trigger needed
+// Will initially be null, then populate automatically
+
+// Lazy props need manual triggering
+const loadAnalytics = () => {
+  Inertia.reload({ only: ['analytics'] })
+}
+</script>
+
+<template>
+  <div>
+    <!-- Always available immediately -->
+    <h1>Welcome {{ user.name }}</h1>
+    
+    <!-- Initially null, loads automatically -->
+    <div v-if="recentActivity">
+      <h2>Recent Activity</h2>
+      <ActivityList :items="recentActivity" />
+    </div>
+    <div v-else>
+      Loading activity...
+    </div>
+    
+    <!-- Only loads when button clicked -->
+    <button @click="loadAnalytics" v-if="!analytics">
+      Load Analytics
+    </button>
+    <AnalyticsChart v-else :data="analytics" />
+  </div>
+</template>
+```
+
+## Merge
+
+Now here's an example of how to use both deferred props and the new static merge functionality in a controller:
+
+```ts
+@Controller('posts')
+export class PostsController {
+  @Get()
+  @Render('Posts/Index')
+  async index() {
+    return {
+      props: {
+        // Regular props load immediately
+        posts: await this.getPosts(),
+        
+        // Deferred props load only when requested
+        comments: Inertia.deferred(async () => {
+          return await this.getComments();
+        }),
+        
+        // Use static merge to combine data
+        users: Inertia.merge('users', [
+          { id: 1, name: 'New User' }
+        ])
+      }
+    };
+  }
+
+  private async getPosts() {
+    return [
+      { id: 1, title: 'First Post' },
+      { id: 2, title: 'Second Post' }
+    ];
+  }
+
+  private async getComments() {
+    // Simulate slow API call
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    return [
+      { id: 1, text: 'Great post!' },
+      { id: 2, text: 'Thanks for sharing' }
+    ];
+  }
+}
+```
+
+And here's how to use it in your Vue component:
+
+```vue
+<script setup lang="ts">
+import { Inertia } from '@inertiajs/inertia'
+
+// Load deferred comments when needed
+const loadComments = () => {
+  Inertia.reload({ only: ['comments'] })
+}
+</script>
+
+<template>
+  <div>
+    <!-- Posts load immediately -->
+    <div v-for="post in posts" :key="post.id">
+      {{ post.title }}
+    </div>
+
+    <!-- Comments are null until loaded -->
+    <button @click="loadComments" v-if="!comments">
+      Load Comments
+    </button>
+    
+    <div v-else>
+      <div v-for="comment in comments" :key="comment.id">
+        {{ comment.text }}
+      </div>
+    </div>
+
+    <!-- Users array will be merged with existing data -->
+    <div v-for="user in users" :key="user.id">
+      {{ user.name }}
+    </div>
+  </div>
+</template>
+```
+
 ---
 
 ## Security
