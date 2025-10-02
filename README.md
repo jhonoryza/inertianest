@@ -725,6 +725,18 @@ const loadComments = () => {
 </template>
 ```
 
+## Development
+
+```bash
+npm run build
+```
+
+add this in `package.json`
+
+```json
+"inertianest": "file:../inertianest",
+```
+
 ---
 
 ## Security
