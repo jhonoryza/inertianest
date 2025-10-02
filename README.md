@@ -399,6 +399,81 @@ defineProps({
 </template>
 ```
 
+### Shared Props
+
+create `inertia.middleware.ts`
+
+```ts
+import { Injectable, NestMiddleware } from '@nestjs/common';
+import { Request, Response } from 'express';
+import { InertiaExpress } from 'inertianest';
+
+@Injectable()
+export class InertiaMiddleware implements NestMiddleware {
+  use(req: Request, res: Response, next: () => void) {
+    if (!res.inertia) {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+      res.inertia = new InertiaExpress(req as any, res as any);
+    }
+
+    res.inertia.share({
+      content: 'contoh content',
+    });
+
+    next();
+  }
+}
+```
+
+modify `home.module.ts`
+
+```ts
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { HomeController } from './home.controller';
+import { InertiaModule } from 'inertianest';
+import { InertiaMiddleware } from 'src/inertia/inertia.middleware';
+
+@Module({
+  imports: [
+    InertiaModule.register({
+      adapter: 'express',
+      view: 'app', // Your base view file name
+      version: '1.0',
+    }),
+  ],
+  controllers: [HomeController],
+})
+export class HomeModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(InertiaMiddleware).forRoutes('home');
+  }
+}
+```
+
+modify `client/pages/Home.vue`
+
+```vue
+<script setup>
+import Main from '@/layouts/Main.vue';
+import { usePage } from '@inertiajs/vue3';
+defineProps({
+  title: String,
+  description: String,
+});
+
+const page = usePage();
+const content = computed(() => page.props.content);
+</script>
+
+<template>
+  <Main>
+    <h1>{{ title }}</h1>
+    <p>{{ description }}</p>
+    <p>{{ content }}</p>
+  </Main>
+</template>
+```
+
 ---
 
 ## Security
