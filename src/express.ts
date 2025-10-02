@@ -14,7 +14,7 @@ export const inertia = (options?: {
   version?: string
   manifest?: any
 }) => {
-  const { view = 'index', version = '1', manifest } = options || {}
+  const { view = 'app', version = '1', manifest } = options || {}
 
   InertiaExpress.setConfig({
     view,

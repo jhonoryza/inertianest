@@ -17,7 +17,7 @@ export abstract class Inertia {
   protected sharedData: Record<string, unknown> = {}
 
   protected static config: InertiaConfig = {
-    view: 'index',
+    view: 'app',
     version: '1',
   }
 

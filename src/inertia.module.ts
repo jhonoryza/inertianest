@@ -22,7 +22,7 @@ export class InertiaModule {
     const configProvider = {
       provide: 'INERTIA_CONFIG',
       useValue: {
-        view: options.view || 'index',
+        view: options.view || 'app',
         version: options.version || '1',
         manifest: options.manifest
       }
