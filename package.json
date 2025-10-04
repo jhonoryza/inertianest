@@ -1,6 +1,6 @@
 {
   "name": "inertianest",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A package for Inertia.js adapters for Nestjs with (Express and Fastify)",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
